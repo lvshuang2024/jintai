@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="一个简洁、响应式的静态图片相册。">
+  <meta name="theme-color" content="#faf9f6">
+  <title>留白 · 图片相册</title>
+  <style>
+    :root {
+      --bg: #faf9f6;
+      --paper: #fff;
+      --text: #252525;
+      --muted: #85827d;
+      --line: #e9e6e0;
+      --max: 1320px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: inherit; text-decoration: none; }
+    .wrap { width: min(var(--max), calc(100% - 48px)); margin: 0 auto; }
+    header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 30px 0 25px; border-bottom: 1px solid var(--line);
+    }
+    .brand { font-size: 19px; font-weight: 650; letter-spacing: .12em; }
+    .brand span { color: var(--muted); font-weight: 400; }
+    nav { display: flex; gap: 26px; color: var(--muted); font-size: 13px; }
+    nav a:hover { color: var(--text); }
+    .intro { padding: 58px 0 34px; }
+    .eyebrow { color: var(--muted); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
+    h1 { margin: 13px 0 10px; font-size: clamp(30px, 5vw,  fifty); font-weight: 500; letter-spacing: .04em; }
+    .intro p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .toolbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 16px 0 22px; color: var(--muted); font-size: 12px;
+    }
+    .filters { display: flex; flex-wrap: wrap; gap: 8px; }
+    .filter {
+      border: 1px solid var(--line); background: transparent; color: var(--muted);
+      border-radius: 999px; padding: 8px 14px; font: inherit; cursor: pointer;
+      transition: .2s ease;
+    }
+    .filter:hover, .filter.active { background: var(--text); color: white; border-color: var(--text); }
+    .gallery {
+      columns: 4 220px; column-gap: 18px; padding-bottom: 70px;
+    }
+    .photo {
+      display: inline-block; width: 100%; margin: 0 0 18px; break-inside: avoid;
+      background: var(--paper); border-radius: 3px; overflow: hidden;
+      cursor: zoom-in; animation: appear .45s both;
+    }
+    .photo img { display: block; width: 100%; height: auto; transition: transform .45s ease; }
+    .photo:hover img { transform: scale(1.025); }
+    .caption { display: flex; justify-content: space-between; gap: 10px; padding: 12px 13px 13px; }
+    .caption strong { font-size: 12px; font-weight: 500; }
+    .caption span { color: var(--muted); font-size: 11px; }
+    footer {
+      border-top: 1px solid var(--line); padding: 24px 0 34px;
+      display: flex; justify-content: space-between; gap: 12px;
+      color: var(--muted); font-size: 11px;
+    }
+    .lightbox {
+      position: fixed; inset: 0; z-index: 10; display: none; place-items: center;
+      padding: 30px; background: rgba(20,20,20,.92);
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img { max-width: min(100%, 1100px); max-height: 84vh; object-fit: contain; }
+    .close {
+      position: absolute; top: 18px; right: 22px; border: 0; background: transparent;
+      color: white; font-size: 32px; cursor: pointer; line-height: 1;
+    }
+    .lightbox-caption { position: absolute; bottom: 18px; color: #ddd; font-size: 12px; }
+    @keyframes appear { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @media (max-width: 650px) {
+      .wrap { width: calc(100% - 30px); }
+      header { padding: 22px 0 18px; }
+      nav { gap: 14px; font-size: 12px; }
+      .intro { padding: 42px 0 26px; }
+      .toolbar { align-items: flex-start; flex-direction: column; gap: 14px; }
+      .gallery { columns: 2 145px; column-gap: 10px; }
+      .photo { margin-bottom: 10px; }
+      .caption { padding: 9px; }
+      .caption strong { font-size: 11px; }
+      footer { flex-direction: column; }
+    }
+    @media (max-width: 360px) {
+      nav { gap: 9px; }
+      .gallery { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#">留白 <span> / GALLERY</span></a>
+      <nav aria-label="主导航">
+        <a href="#gallery">相册</a>
+        <a href="#about">关于</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="intro">
+        <div class="eyebrow">A LITTLE COLLECTION OF MOMENTS</div>
+        <h1>把日常，收进相册。</h1>
+        <p>一些光线、风景与生活片段。慢慢看，不必着急。</p>
+      </section>
+
+      <section id="gallery" aria-label="图片相册">
+        <div class="toolbar">
+          <div class="filters" id="filters">
+            <button class="filter active" data-filter="全部">全部</button>
+            <button class="filter" data-filter="风景">风景</button>
+            <button class="filter" data-filter="建筑">建筑</button>
+            <button class="filter" data-filter="日常">日常</button>
+          </div>
+          <span id="count">精选照片 · 12 张</span>
+        </div>
+        <div class="gallery" id="galleryGrid"></div>
+      </section>
+    </main>
+
+    <footer id="about">
+      <span>留白 · 一个简单的个人图片空间</span>
+      <span>© <span id="year"></span> GALLERY. ALL RIGHTS RESERVED.</span>
+    </footer>
+  </div>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="图片预览">
+    <button class="close" id="close" aria-label="关闭预览">×</button>
+    <img id="largeImage" alt="">
+    <div class="lightbox-caption" id="largeCaption"></div>
+  </div>
+
+  <script>
+    // 图片清单：把 image 地址替换为 images 文件夹中的本地图片路径即可。
+    // 例如：image: "images/my-photo.jpg"
+    const photos = [
+      { title: "山间清晨", category: "风景", image: "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1000&q=85" },
+      { title: "城市一角", category: "建筑", image: "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1000&q=85" },
+      { title: "安静的午后", category: "日常", image: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1000&q=85" },
+      { title: "海边日落", category: "风景", image: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1000&q=85" },
+      { title: "几何线条", category: "建筑", image: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1000&q=85" },
+      { title: "桌上的花", category: "日常", image: "https://images.unsplash.com/photo-1490750967868-88aa4486c946?auto=format&fit=crop&w=1000&q=85" },
+      { title: "旷野", category: "风景", image: "https://images.unsplash.com/photo-1472396961693-142e6e269027?auto=format&fit=crop&w=1000&q=85" },
+      { title: "白色空间", category: "建筑", image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1000&q=85" },
+      { title: "慢一点", category: "日常", image: "https://images.unsplash.com/photo-1445116572660-236099ec97a0?auto=format&fit=crop&w=1000&q=85" },
+      { title: "湖与山", category: "风景", image: "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1000&q=85" },
+      { title: "光影之间", category: "建筑", image: "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1000&q=85&sat=-35" },
+      { title: "日常记录", category: "日常", image: "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1000&q=85" }
+    ];
+
+    const grid = document.getElementById("galleryGrid");
+    const count = document.getElementById("count");
+    const lightbox = document.getElementById("lightbox");
+    const largeImage = document.getElementById("largeImage");
+    const largeCaption = document.getElementById("largeCaption");
+
+    function render(filter = "全部") {
+      const items = filter === "全部" ? photos : photos.filter(photo => photo.category === filter);
+      grid.innerHTML = items.map((photo, index) => `
+        <article class="photo" tabindex="0" role="button"
+          aria-label="查看${photo.title}"
+          data-image="${photo.image}" data-title="${photo.title}">
+          <img src="${photo.image}" alt="${photo.title}" loading="lazy">
+          <div class="caption"><strong>${photo.title}</strong><span>${photo.category}</span></div>
+        </article>
+      `).join("");
+      count.textContent = `精选照片 · ${items.length} 张`;
+      grid.querySelectorAll(".photo").forEach(card => {
+        const open = () => showImage(card.dataset.image, card.dataset.title);
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", event => {
+          if (event.key === "Enter" || event.key === " ") { event.preventDefault(); open(); }
+        });
+      });
+    }
+
+    function showImage(src, title) {
+      largeImage.src = src;
+      largeImage.alt = title;
+      largeCaption.textContent = title;
+      lightbox.classList.add("open");
+      document.body.style.overflow = "hidden";
+      document.getElementById("close").focus();
+    }
+    function closeImage() {
+      lightbox.classList.remove("open");
+      document.body.style.overflow = "";
+      largeImage.src = "";
+    }
+
+    document.getElementById("filters").addEventListener("click", event => {
+      const button = event.target.closest("button[data-filter]");
+      if (!button) return;
+      document.querySelectorAll(".filter").forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+      render(button.dataset.filter);
+    });
+    document.getElementById("close").addEventListener("click", closeImage);
+    lightbox.addEventListener("click", event => { if (event.target === lightbox) closeImage(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeImage(); });
+
+    document.getElementById("year").textContent = new Date().getFullYear();
+    render();
+  </script>
+</body>
+</html>

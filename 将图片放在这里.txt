@@ -1,0 +1,1 @@
+把你的图片文件放在此文件夹中，例如 photo-01.jpg。然后在 index.html 的 photos 数组中填写 images/photo-01.jpg。
